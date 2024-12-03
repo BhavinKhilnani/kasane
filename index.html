@@ -1,0 +1,111 @@
+<!-- <iframe src="https://bhavinkhilnani.github.io/grandmasters-of-edinburgh/" frameborder="0"></iframe> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body{
+        width: 227px;
+        height: 355px;
+
+    }
+    .search-wrapper {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+    input {
+      font-size: 1rem;
+      padding: 8px;
+      background-color: #565656;
+      color: #f8f8f8;
+      border-radius: 1rem;
+      border: none;
+    }
+    body{
+        background-color: rgb(21, 21, 21);
+    }
+    .user-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      overflow: hidden;
+    }
+    .card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 50px;
+      width: 150px;
+      border: 1px solid #565656;
+      border-radius: 5px;
+      background-color: #353535;
+      cursor: pointer;
+      text-align: center;
+      padding: 25px;
+      color: #f8f8f8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    }
+    card:hover{
+        font-size: 1.5rem;
+    }
+    .card h2 {
+      font-size: 1rem;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Implementing the search bar -->
+  <div class="search-wrapper">
+    <input type="search" id="search-bar" placeholder="Search members...">
+  </div>
+  <div class="user-cards"></div>
+
+  <script>
+    var members = [];
+    var membersReal = [];
+    var filteredMembers = [];
+    const clubname = 'kasanes-karaoke';
+
+    // Fetch members from the Chess.com API
+    fetch(`https://api.chess.com/pub/club/${clubname}/members`)
+      .then(res => res.json())
+      .then(data => {
+        // Combine members from weekly, monthly, and all-time lists
+        members = [...data.weekly, ...data.monthly, ...data.all_time];
+        members.forEach(member => {
+          membersReal.push(member.username);
+        });
+
+        // Initially display all members
+        displayMembers(membersReal);
+      });
+
+    // Function to display members
+    function displayMembers(memberList) {
+      const userCards = document.querySelector('.user-cards');
+      userCards.innerHTML = ''; // Clear existing cards
+      memberList.forEach(member => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.innerHTML = `<h2>${member}</h2>`;
+        card.onclick = () => {
+          window.open(`https://www.chess.com/member/${member}`);
+        };
+        userCards.appendChild(card);
+      });
+    }
+
+    // Add event listener for search input
+    document.getElementById('search-bar').addEventListener('input', function (e) {
+      const query = e.target.value.toLowerCase();
+      filteredMembers = membersReal.filter(member => member.toLowerCase().includes(query));
+      displayMembers(filteredMembers);
+    });
+  </script>
+</body>
+</html>
